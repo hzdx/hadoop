@@ -1,4 +1,4 @@
-package com.mycom.hadoop.hdfs;
+package com.mycom.hadoop.mr;
 
 import java.io.IOException;
 import java.util.StringTokenizer;
