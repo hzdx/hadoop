@@ -1,15 +1,14 @@
 package com.mycom.hadoop.hbase;
 
-import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
-import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.HBaseAdmin;
@@ -18,43 +17,171 @@ import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
-import org.apache.hadoop.hbase.filter.Filter;
 import org.apache.hadoop.hbase.util.Bytes;
+
 /**
- * hbase java api?
+ * hbase java api
  *
  */
 public class HbaseTest {
 	static Configuration conf = null;
-
 	static {
-		Configuration conf = new Configuration();
-//		FileReader is = new FileReader(new FileInputStream(
-//				"E:/github/hadoop/hadoop/src/main/resources/hbase-site.xml"));
-		conf.addResource("E:/github/hadoop/hadoop/src/main/resources/hbase-site.xml");
-		//加载hbase配置，具体需要哪些配置不太清楚
-		conf = HBaseConfiguration.create(conf);
-	
+		// 加载hbase配置，只需要指定远程zookeeper地址
+		conf = HBaseConfiguration.create();
+		conf.set("hbase.zookeeper.quorum", "192.168.43.131");
+
 	}
 
-	/**
+	/***
+	 * 创建一张表 并指定列簇
 	 */
-	public static void createTable(String tablename, String columnFamily) throws Exception {
-		HBaseAdmin admin = new HBaseAdmin(conf);
-		if (admin.tableExists(tablename)) {
-			System.out.println("Table exists!");
-			System.exit(0);
+	public void createTable(String tableName, String... cols) throws Exception {
+		HBaseAdmin admin = new HBaseAdmin(conf);// 客户端管理工具类
+		if (admin.tableExists(tableName)) {
+			System.out.println("此表已经存在.......");
 		} else {
-			HTableDescriptor tableDesc = new HTableDescriptor(TableName.valueOf(tablename));
-			tableDesc.addFamily(new HColumnDescriptor(columnFamily));
-			admin.createTable(tableDesc);
-			System.out.println("create table success!");
+			HTableDescriptor table = new HTableDescriptor(tableName);
+			for (String c : cols) {
+				HColumnDescriptor col = new HColumnDescriptor(c);// 列簇名
+				table.addFamily(col);// 添加到此表中
+			}
+
+			admin.createTable(table);// 创建一个表
+			admin.close();
+			System.out.println("创建表成功!");
 		}
-		admin.close();
+	}
+
+	/**
+	 * 添加数据, 建议使用批量添加
+	 * 
+	 * @param tableName
+	 *            表名
+	 * @param row
+	 *            行号
+	 * @param columnFamily
+	 *            列簇
+	 * @param column
+	 *            列
+	 * @param value
+	 *            具体的值
+	 * 
+	 **/
+	public static void insertRow(String tableName, String row, String columnFamily, String column, String value)
+			throws Exception {
+		HTable table = new HTable(conf, tableName);
+		Put put = new Put(Bytes.toBytes(row));
+		// 参数出分别：列族、列、值
+		put.add(Bytes.toBytes(columnFamily), Bytes.toBytes(column), Bytes.toBytes(value));
+
+		table.put(put);
+		table.close();// 关闭
+		System.out.println("插入一条数据成功!");
+	}
+
+	/**
+	 * 删除一条数据
+	 * 
+	 * @param tableName
+	 *            表名
+	 * @param row
+	 *            rowkey
+	 **/
+	public static void deleteByRow(String tableName, String rowkey) throws Exception {
+		HTable h = new HTable(conf, tableName);
+		Delete d = new Delete(Bytes.toBytes(rowkey));
+		h.delete(d);// 删除一条数据
+		h.close();
+	}
+
+	/**
+	 * 删除多条数据
+	 * 
+	 * @param tableName
+	 *            表名
+	 * @param row
+	 *            rowkey
+	 **/
+	public static void deleteByRow(String tableName, String rowkey[]) throws Exception {
+		HTable h = new HTable(conf, tableName);
+
+		List<Delete> list = new ArrayList<Delete>();
+		for (String k : rowkey) {
+			Delete d = new Delete(Bytes.toBytes(k));
+			list.add(d);
+		}
+		h.delete(list);// 删除
+		h.close();// 释放资源
+	}
+
+	/**
+	 * 输出一条数据
+	 * 
+	 * @param tableName
+	 *            表名
+	 * @param rowkey
+	 *            行号
+	 ***/
+	public static void getOneDataByRowKey(String tableName, String rowkey) throws Exception {
+		HTable h = new HTable(conf, tableName);
+
+		Get g = new Get(Bytes.toBytes(rowkey));
+		Result r = h.get(g);
+		System.out.println(r);
+		for (KeyValue k : r.raw()) {
+
+			System.out.println("行号:  " + Bytes.toStringBinary(k.getRow()));
+			System.out.println("时间戳:  " + k.getTimestamp());
+			System.out.println("列簇:  " + Bytes.toStringBinary(k.getFamily()));
+			System.out.println("列:  " + Bytes.toStringBinary(k.getQualifier()));
+			// if(Bytes.toStringBinary(k.getQualifier()).equals("myage")){
+			// System.out.println("值: "+Bytes.toInt(k.getValue()));
+			// }else{
+			String ss = Bytes.toString(k.getValue());
+			System.out.println("值:  " + ss);
+			// }
+
+		}
+		h.close();
 
 	}
 
 	/**
+	 * 扫描所有数据或特定数据
+	 * 
+	 * @param tableName
+	 **/
+	public static void showAll(String tableName) throws Exception {
+
+		HTable h = new HTable(conf, tableName);
+
+		Scan scan = new Scan();
+		// 扫描特定区间
+		// Scan scan=new Scan(Bytes.toBytes("开始行号"),Bytes.toBytes("结束行号"));
+		ResultScanner scanner = h.getScanner(scan);
+		for (Result r : scanner) {
+			System.out.println("==================================");
+			for (KeyValue k : r.raw()) {
+
+				System.out.println("行号:  " + Bytes.toStringBinary(k.getRow()));
+				System.out.println("时间戳:  " + k.getTimestamp());
+				System.out.println("列簇:  " + Bytes.toStringBinary(k.getFamily()));
+				System.out.println("列:  " + Bytes.toStringBinary(k.getQualifier()));
+				// if(Bytes.toStringBinary(k.getQualifier()).equals("myage")){
+				// System.out.println("值: "+Bytes.toInt(k.getValue()));
+				// }else{
+				String ss = Bytes.toString(k.getValue());
+				System.out.println("值:  " + ss);
+				// }
+
+			}
+		}
+		h.close();
+
+	}
+
+	/**
+	 * 删除表
 	 */
 	public static boolean deleteTable(String tablename) throws IOException {
 		HBaseAdmin admin = new HBaseAdmin(conf);
@@ -73,78 +200,14 @@ public class HbaseTest {
 		return true;
 	}
 
-	/**
-	 */
-	public static void putCell(HTable table, String rowKey, String columnFamily, String identifier, String data)
-			throws Exception {
-		Put p1 = new Put(Bytes.toBytes(rowKey));
-		p1.add(Bytes.toBytes(columnFamily), Bytes.toBytes(identifier), Bytes.toBytes(data));
-		table.put(p1);
-		System.out.println("put '" + rowKey + "', '" + columnFamily + ":" + identifier + "', '" + data + "'");
-	}
-
-	/**
-	 */
-	public static Result getRow(HTable table, String rowKey) throws Exception {
-		Get get = new Get(Bytes.toBytes(rowKey));
-		Result result = table.get(get);
-		System.out.println("Get: " + result);
-		return result;
-	}
-
-	/**
-	 */
-	public static void deleteRow(HTable table, String rowKey) throws Exception {
-		Delete delete = new Delete(Bytes.toBytes(rowKey));
-		table.delete(delete);
-		System.out.println("Delete row: " + rowKey);
-	}
-
-	/**
-	 */
-	public static ResultScanner scanAll(HTable table) throws Exception {
-		Scan s = new Scan();
-		ResultScanner rs = table.getScanner(s);
-		return rs;
-	}
-
-	/**
-	 */
-	public static ResultScanner scanRange(HTable table, String startrow, String endrow) throws Exception {
-		Scan s = new Scan(Bytes.toBytes(startrow), Bytes.toBytes(endrow));
-		ResultScanner rs = table.getScanner(s);
-		return rs;
-	}
-
-	/**
-	 */
-	public static ResultScanner scanFilter(HTable table, String startrow, Filter filter) throws Exception {
-		Scan s = new Scan(Bytes.toBytes(startrow), filter);
-		ResultScanner rs = table.getScanner(s);
-		return rs;
-	}
-
 	public static void main(String[] args) throws Exception {
-		// TODO Auto-generated method stub
+		// deleteByRow("test","row1");
+		getOneDataByRowKey("test", "row2");
+		// insertRow("test","row2","cf","ddd","abc");
+		// showAll("test");
 
-		//HTable table = new HTable(conf, "test");
-
-		// ResultScanner rs = HBaseDAO.scanRange(table, "2013-07-10*",
-		// "2013-07-11*");
-		// ResultScanner rs = HBaseDAO.scanRange(table, "100001", "100003");
-//		ResultScanner rs = HbaseTest.scanAll(table);
-//
-//		for (Result r : rs) {
-//			System.out.println("Scan: " + r);
-//		}
-//		table.close();
-
-		createTable("apitable", "testcf");
-		// HBaseDAO.putRow("apitable", "100001", "testcf", "name", "liyang");
-		// HBaseDAO.putRow("apitable", "100003", "testcf", "name", "leon");
-		// HBaseDAO.deleteRow("apitable", "100002");
-		// HBaseDAO.getRow("apitable", "100003");
-		// HBaseDAO.deleteTable("apitable");
+		// createTable("test2", "testcf");
+		// deleteTable("apitable");
 
 	}
 
