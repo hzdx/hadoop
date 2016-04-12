@@ -26,7 +26,7 @@ import org.apache.hadoop.hbase.util.Bytes;
 public class HbaseTest {
 	static Configuration conf = null;
 	static {
-		// 加载hbase配置，只需要指定远程zookeeper地址
+		// 加载hbase配置，需要指定远程zookeeper地址
 		conf = HBaseConfiguration.create();
 		conf.set("hbase.zookeeper.quorum", "192.168.43.131");
 

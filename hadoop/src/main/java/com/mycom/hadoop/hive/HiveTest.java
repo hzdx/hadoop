@@ -24,7 +24,7 @@ public class HiveTest {
 		}
 
 		Connection conn = DriverManager.getConnection(hiveUrl, "ldm", "mine");
-		// 这里用户名要写linux的用户名才有创建表的权限，密码随便写，hive权限不太明白？
+		// 这里用户名要写linux的用户名才有创建表的权限，密码随便写，hive权限
 		Statement stmt = conn.createStatement();
 
 		// create table
