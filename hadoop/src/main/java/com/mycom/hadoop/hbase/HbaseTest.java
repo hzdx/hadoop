@@ -27,6 +27,8 @@ public class HbaseTest {
 	static Configuration conf = null;
 	static {
 		// 加载hbase配置，需要指定远程zookeeper地址
+		//实际上 是先访问zookeeper，然后zookeeper访问hbase的-ROOT-和.META表，
+		//经过了多次网络请求
 		conf = HBaseConfiguration.create();
 		conf.set("hbase.zookeeper.quorum", "192.168.43.131");
 
