@@ -16,7 +16,6 @@ import org.apache.hadoop.io.IOUtils;
 public class HdfsTest {
 
 	public static void main(String[] args) throws Exception {
-		// TODO Auto-generated method stub
 		String uri = "hdfs://hacluster";
 		// 要部署到hadoop上执行,写ip可能会报connected refused异常。
 		Configuration conf = new Configuration();

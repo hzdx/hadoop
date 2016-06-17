@@ -1,0 +1,15 @@
+#!/bin/bash
+TOOLKIT_HOME=$(dirname "$0")/..
+CLASSPATH=
+if [ -d "${TOOLKIT_HOME}/lib" ]; then
+        for i in ${TOOLKIT_HOME}/lib/*.jar;
+                do
+      CLASSPATH="$CLASSPATH":"$i"
+    done
+fi
+VM_ARGS="-Dftp.conf=${TOOLKIT_HOME}/config/ftp.properties \
+ -Dsdtp.conf=${TOOLKIT_HOME}/config/global.properties \
+ -Dport=9001 -Dbuffer.size=100000 -Dlog.dir=${TOOLKIT_HOME}/"
+ 
+MAIN_CLASS=com.mycom.hadoop.hbase.HbaseImporter
+java -classpath $CLASSPATH $VM_ARGS $MAIN_CLASS "$@"

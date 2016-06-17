@@ -17,8 +17,8 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
  * 官方例子：统计文本文件的单词个数列表的mr任务
  *
  */
-public class WordCount {
-
+public class WordCount0 {
+//
 	public static class TokenizerMapper extends Mapper<Object, Text, Text, IntWritable> {
 
 		private final static IntWritable one = new IntWritable(1);
@@ -33,7 +33,7 @@ public class WordCount {
 			}
 		}
 	}
-
+//
 	public static class IntSumReducer extends Reducer<Text, IntWritable, Text, IntWritable> {
 		private IntWritable result = new IntWritable();
 

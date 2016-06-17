@@ -31,7 +31,13 @@ public class HbaseTest {
 		// 实际上 是先访问zookeeper，然后zookeeper访问hbase的-ROOT-和.META表，
 		// 经过了多次网络请求
 		conf = HBaseConfiguration.create();
-		conf.set("hbase.zookeeper.quorum", "192.168.43.131");
+		conf.set("hbase.zookeeper.quorum", "192.168.16.132");
+		
+		conf.addResource("core-site.xml");
+		conf.addResource("hdfs-site.xml");
+		conf.addResource("mapred-site.xml");
+		conf.addResource("yarn-site.xml");
+		conf.addResource("hbase-site.xml");
 
 	}
 
@@ -205,9 +211,9 @@ public class HbaseTest {
 
 	public static void main(String[] args) throws Exception {
 		// deleteByRow("test","row1");
-		getOneDataByRowKey("test", "row2");
+		//getOneDataByRowKey("test", "row2");
 		// insertRow("test","row2","cf","ddd","abc");
-		// showAll("test");
+		 showAll("dh");
 
 		// createTable("test2", "testcf");
 		// deleteTable("apitable");
