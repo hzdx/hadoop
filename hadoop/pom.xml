@@ -23,22 +23,11 @@
 				</configuration>
 			</plugin>
 
-			<!-- <plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<version>2.4.1</version>
-				<configuration>
-					<archive>
-						<manifest>
-							<mainClass>com.mycom.hadoop.Main</mainClass>
-						</manifest>
-					</archive>
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
-				</configuration>
-			</plugin>
- -->
- 			<plugin>
+			<!-- <plugin> <artifactId>maven-assembly-plugin</artifactId> <version>2.4.1</version> 
+				<configuration> <archive> <manifest> <mainClass>com.mycom.hadoop.Main</mainClass> 
+				</manifest> </archive> <descriptorRefs> <descriptorRef>jar-with-dependencies</descriptorRef> 
+				</descriptorRefs> </configuration> </plugin> -->
+			<plugin>
 				<artifactId>maven-jar-plugin</artifactId>
 				<version>2.6</version>
 				<configuration>
@@ -52,42 +41,15 @@
 				</configuration>
 			</plugin>
 
-			<!-- <plugin>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<version>2.9</version>
-				<executions>
-					<execution>
-						<id>copy</id>
-						<phase>package</phase>
-						<goals>
-							<goal>copy-dependencies</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${project.build.directory}/lib</outputDirectory>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
+			<!-- <plugin> <artifactId>maven-dependency-plugin</artifactId> <version>2.9</version> 
+				<executions> <execution> <id>copy</id> <phase>package</phase> <goals> <goal>copy-dependencies</goal> 
+				</goals> <configuration> <outputDirectory>${project.build.directory}/lib</outputDirectory> 
+				</configuration> </execution> </executions> </plugin> <plugin> <artifactId>maven-assembly-plugin</artifactId> 
+				<version>2.4.1</version> <executions> <execution> <id>make-zip</id> <phase>package</phase> 
+				<goals> <goal>single</goal> </goals> </execution> </executions> <configuration> 
+				<descriptors> <descriptor>src/assembly/assembly.xml</descriptor> </descriptors> 
+				</configuration> </plugin> -->
 
-			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<version>2.4.1</version>
-				<executions>
-					<execution>
-						<id>make-zip</id>
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<descriptors>
-						<descriptor>src/assembly/assembly.xml</descriptor>
-					</descriptors>
-				</configuration>
-			</plugin> -->
- 
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.9</version>
@@ -101,7 +63,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<jdk.version>1.7</jdk.version>
+		<jdk.version>1.8</jdk.version>
 		<spring.version>4.1.2.RELEASE</spring.version>
 		<hadoop.version>2.7.2</hadoop.version>
 	</properties>
@@ -149,6 +111,12 @@
 		<dependency>
 			<groupId>org.apache.spark</groupId>
 			<artifactId>spark-core_2.10</artifactId>
+<!--  			<exclusions>
+				<exclusion>
+					<groupId>org.eclipse.jetty.orbit</groupId>
+					<artifactId>javax.servlet</artifactId>
+				</exclusion>			
+			</exclusions>  -->
 			<version>1.6.1</version>
 		</dependency>
 
@@ -173,20 +141,17 @@
 			<version>0.9.0.0</version>
 		</dependency>
 
-		 <!-- storm -->
-        <dependency>
-            <groupId>org.apache.storm</groupId>
-            <artifactId>storm-core</artifactId>
-            <version>1.0.0</version>
-            <scope>provided</scope>
-        </dependency>
+		<!-- storm -->
+		<dependency>
+			<groupId>org.apache.storm</groupId>
+			<artifactId>storm-core</artifactId>
+			<version>1.0.0</version>
+			<scope>provided</scope>
+		</dependency>
 
-        <!-- <dependency>
-            <groupId>org.apache.storm</groupId>
-            <artifactId>storm-hdfs</artifactId>
-            <version>1.0.1</version>
-        </dependency> -->
-        
+		<!-- <dependency> <groupId>org.apache.storm</groupId> <artifactId>storm-hdfs</artifactId> 
+			<version>1.0.1</version> </dependency> -->
+
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
@@ -211,12 +176,18 @@
 			<version>3.8.1</version>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>org.apache.zookeeper</groupId>
+			<artifactId>zookeeper</artifactId>
+			<version>3.4.9</version>
+		</dependency>
 	</dependencies>
 
 	<repositories>
 		<repository>
-			<id>osc</id>
-			<url>http://maven.oschina.net/content/groups/public/</url>
+			<id>aliyun</id>
+			<url>http://maven.aliyun.com/nexus/content/groups/public/</url>
 		</repository>
 		<repository>
 			<id>maven2</id>

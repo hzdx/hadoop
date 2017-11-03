@@ -48,17 +48,20 @@ public class WordCount0 {
 		}
 	}
 
+	//使用hadoop和java命令都可以执行
+	//使用hadoop命令，可以获得hadoop配置，classpath
 	public static void main(String[] args) throws Exception {
 		Configuration conf = new Configuration();
-		Job job = Job.getInstance(conf, "word count");
+		Job job = Job.getInstance(conf, "word count1");
 		job.setJarByClass(WordCount.class);
 		job.setMapperClass(TokenizerMapper.class);
 		job.setCombinerClass(IntSumReducer.class);
 		job.setReducerClass(IntSumReducer.class);
 		job.setOutputKeyClass(Text.class);
 		job.setOutputValueClass(IntWritable.class);
-		FileInputFormat.addInputPath(job, new Path(args[0]));
-		FileOutputFormat.setOutputPath(job, new Path(args[1]));
+		FileInputFormat.addInputPath(job, new Path("/tmp/test.txt"));
+		FileOutputFormat.setOutputPath(job, new Path("/tmp/test_result1"));
+		//输出目录不应该预先存在，防止长时间任务结果被覆盖
 		System.exit(job.waitForCompletion(true) ? 0 : 1);
 
 		/**

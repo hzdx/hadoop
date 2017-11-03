@@ -31,7 +31,7 @@ public class RandomEmitSpout extends BaseRichSpout {
 
 	private Random rand;
 
-	private static final String[] sentences = new String[] { "edi:I'm happy", "marry:I'm angry", "john:I'm sad",
+	private static final String[] sentences =  { "edi:I'm happy", "marry:I'm angry", "john:I'm sad",
 			"ted:I'm excited", "laden:I'm dangerous" };
 
 	@Override

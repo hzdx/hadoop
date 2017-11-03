@@ -20,7 +20,7 @@ import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.util.Bytes;
 
 /**
- * hbase java api
+ * hbase java api 可以远程访问
  *
  */
 public class HbaseTest {

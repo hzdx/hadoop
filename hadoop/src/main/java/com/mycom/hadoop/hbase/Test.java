@@ -61,10 +61,10 @@ public class Test {
 	}
 
 	public static void main(String[] args) throws IOException, LoginException {
-		//org.apache.hadoop.hbase.client.Connection connection = ConnectionFactory.createConnection(HBaseConfiguration.create());
+		org.apache.hadoop.hbase.client.Connection connection = ConnectionFactory.createConnection(HBaseConfiguration.create());
 
-		HConnection connection = HConnectionManager.createConnection(HBaseConfiguration.create());
-		System.out.println(Arrays.asList(connection.getTableNames()));
+		//HConnection connection = HConnectionManager.createConnection(HBaseConfiguration.create());
+		//System.out.println(Arrays.asList(connection.getTableNames()));
 //		InetAddress host = InetAddress.getByName("shyp-bigdata-b-cn01");
 //		System.out.println(host.getHostAddress());
 	}
