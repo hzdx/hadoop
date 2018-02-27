@@ -36,7 +36,8 @@ public class FileReceiver extends Receiver<String> {
     class Worker extends Thread {  
   
         @Override  
-        public void run() {  
+        public void run() {
+        	
             while (true) {  
                 try {  
                     InputStream resource = FileReceiver.class.getClassLoader().getResourceAsStream("content.txt");
